@@ -1,21 +1,21 @@
 import socket
 
 #create a TCP socket server
-socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 #binding the socket to the server port  
 server_port = ('localhost', 8000)
 print('starting socketServer %s on port %s ' % server_port)
-socket.bind(server_port)
+server_socket.bind(server_port)
 
 #listenign for inbound connections
-socket.listen(1)
+server_socket.listen(1)
 
 while True:
     #wait for conncetion
     print('Server waiting for connection')
 
-    connection, client_address = socket.accept()
+    connection, client_address = server_socket.accept()
 
     try:
         #print connceting and client address
@@ -34,10 +34,11 @@ while True:
                 msg = msg + 'plus extra from the sever'
                 msg = bytes(msg, 'utf-8')
 
-                connection.sendall(data)
+                connection.sendall(msg)
 
             else:
                 print("no more data from", client_address)
+                break
     finally:
         #clean up connection
         connection.close()
