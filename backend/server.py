@@ -28,6 +28,7 @@ while True:
             print("recieved" % data)
             if data: 
                 #send back to client if data exists (echo)
+                #add a bit of message so we know were on the right track
                 print("sending data back to client")
                 msg = str(data)
                 msg = msg + 'plus extra from the sever'
