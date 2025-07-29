@@ -1,44 +1,45 @@
 import socket
+import threading
+from _thread import start_new_thread
 
-#create a TCP socket server
-server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-#binding the socket to the server port  
-server_port = ('localhost', 8000)
-print('starting socketServer %s on port %s ' % server_port)
-server_socket.bind(server_port)
+lock = threading.Lock()
 
-#listenign for inbound connections
-server_socket.listen(1)
+#add each thread/player to this map 
+players = {}
 
-while True:
-    #wait for conncetion
-    print('Server waiting for connection')
+#handle clietn connectiong function
+def handle_client(c):
+    while True:
+        data = c.recv(1024)
+        if not data:
+            print('bye')
+            lock.release()
+            break
+        c.send(data[::-1])
+    c.close()
 
-    connection, client_address = server_socket.accept()
+def main():
 
-    try:
-        #print connceting and client address
-        print('Connected by', client_address)
-        
-        #recieving the data in chucnks of bytes
+    #creating a TCP socket server
+    s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 
-        while True:
-            data = connection.recv(1024) #CHANGE once we know how much data to receive
-            print("recieved" % data)
-            if data: 
-                #send back to client if data exists (echo)
-                #add a bit of message so we know were on the right track
-                print("sending data back to client")
-                msg = str(data)
-                msg = msg + 'plus extra from the sever'
-                msg = bytes(msg, 'utf-8')
+    host = 'localhost'
+    port = 8000
+    
+    #binding socket to server port
+    print("Server running on port", port)
+    s.bind((host,port))
+    
+    #listening for inbound connections
+    s.listen(5)
 
-                connection.sendall(msg)
 
-            else:
-                print("no more data from", client_address)
-                break
-    finally:
-        #clean up connection
-        connection.close()
+    while True:
+        c, addr = s.accept()
+        lock.acquire()
+        print('connected to:', addr[0], ":", addr[1])
+        start_new_thread(handle_client,(c,))
+
+if __name__ == '__main__':
+    main()

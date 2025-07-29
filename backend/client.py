@@ -1,29 +1,37 @@
 #create a TCP/IP socket for a client
 
 import socket
-client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-#connect the socket to port where the server is listening
-server_address = ('localhost', 8000)
+def main():
+    #define server address and port to connect to
+    host = 'localhost'
+    port = 8000
 
-print('connecting to port' , server_address)
-client_socket.connect(server_address)
+    #create tcp socket
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-try:
-    # send data 
-    message = 'This is new message. Please repeat. '
-    print('Sending: "%s"' % message)
-    client_socket.sendall(bytes(message, 'utf-8')) #encoding in bytes using utf-8 protocl
+    #connect to sever
+    s.connect((host, port))
 
-    # listen for a response back to establish connection
-    amount_received = 0
-    amount_expected = len(message)
+    #message we send to server
+    msg = "hello from client"
 
-    while amount_received < amount_expected:
-        data = client_socket.recv(1024)
-        amount_received += len(data)
+    while True:
+        #send message to sever encoded as bytes
+        s.send(msg.encode('ascii'))
 
-        print('recieved "%s"' %data)
-finally:
-    print('closing client')
-    client_socket.close()
+        #recieve a response from server up to 1024 bytes
+        data = s.recv(1024)
+
+        #decode and print server
+        print('Received from server:', data.decode('ascii'))
+
+        ans = input('Do you want to continue (y/n): ')
+        if ans.lower() != 'y':
+            break
+
+    #close socket connection
+    s.close()
+    
+if __name__ == '__main__':
+    main()
