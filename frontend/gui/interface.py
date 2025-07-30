@@ -39,6 +39,8 @@ while running:
     #draw grid
     draw_grid(tile_size)
 
+
+    #event handler, add avents like on click, clikc hold, drawing lines
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
