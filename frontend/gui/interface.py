@@ -1,5 +1,5 @@
 import pygame
-
+from pygame.locals import *
 
 #Initialize pygame
 pygame.init()
@@ -44,7 +44,19 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-
+        elif event.type == pygame.MOUSEMOTION:
+            if event.rel[0] > 0:
+                print("mosuing moving to the right")
+            elif event.rel[1] > 0:
+                print("Mouse moving down")
+            elif event.rel[1] < 0:
+                print("mouse moving up")
+            elif event.rel[0] < 0:
+                print("mouse moving left")
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+                print("Right mouse button pressed")
+        elif event.type == pygame.MOUSEBUTTONUP:
+            print("Mouse button has been released")
     pygame.display.update()
 
 #quit pygame
