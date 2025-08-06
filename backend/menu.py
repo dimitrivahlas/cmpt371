@@ -2,6 +2,9 @@ import threading
 from tkinter import *
 import socket
 from backend.server import run
+from backend import server
+
+
 def show_menu():
     """
     returns IP of user
@@ -17,6 +20,7 @@ def show_menu():
         frame.tkraise()
 
     def back_ToMenu():
+        server.stop_server()
         show_window(menu_frame)
 
     def host_game():
@@ -25,7 +29,6 @@ def show_menu():
         address_text.config(text="Your IP Address is: " + host_ip())
         address_text.pack(pady=10)
         show_window(host_frame)
-
         thread1 = threading.Thread(target=run, args=(host_ip(), 50558), daemon= True).start()
 
     def join_game():

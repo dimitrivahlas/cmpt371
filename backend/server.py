@@ -2,6 +2,9 @@ import socket
 import threading
 from _thread import start_new_thread
 
+server_running = False
+server_socket = None
+
 lock = threading.Lock()
 
 # add each thread/player to this map
@@ -33,10 +36,17 @@ def handle_client(c):
         c.send(data[::-1])
     c.close()
 
+def stop_server():
+    global server_running
+
+    server_running = False
 
 def run(ip, portno):
+    global server_running, server_socket
+    server_running = True
     # creating a TCP socket server
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
 
     host = 'localhost'
     if ip is not None:
@@ -46,17 +56,23 @@ def run(ip, portno):
 
     # binding socket to server port
     print("Server running on port", port)
-    s.bind((host, port))
+    server_socket.bind((host, port))
 
     # listening for inbound connections
-    s.listen(5)
+    server_socket.listen(5)
 
-    while True:
-        c, addr = s.accept()
-        lock.acquire()
-        print('connected to:', addr[0], ":", addr[1])
-        thread = threading.Thread(target=handle_client, args=(c,), daemon=True).start()
-
+    server_socket.settimeout(1.0)  # Set a timeout of 1 second
+    try:
+        while server_running:
+            try:
+                c, addr = server_socket.accept()
+                lock.acquire()
+                print('connected to:', addr[0], ":", addr[1])
+                thread = threading.Thread(target=handle_client, args=(c,), daemon=True).start()
+            except socket.timeout:
+                continue
+    finally:
+        server_socket.close()
 
 def run2():
     # creating a TCP socket server
