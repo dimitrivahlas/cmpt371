@@ -8,7 +8,10 @@ pygame.init()
 #set up game swindow
 tile_size = 100
 screen_width = 800
-screen_height = 800
+grid_height = 800
+leaderboard_height = 100
+screen_height = grid_height + leaderboard_height
+
 screen = pygame.display.set_mode((screen_width,screen_height))
 pygame.display.set_caption("Deny and Conquer")
 
@@ -23,6 +26,21 @@ scribble_surf = pygame.Surface((screen_width, screen_height), SRCALPHA)
 drawing = False
 locked_tiles = []
 current_tile = None
+
+
+pygame.font.init()
+font = pygame.font.SysFont(None, 36)
+
+total_tiles = (screen_width // tile_size) * (screen_height // tile_size)
+
+def draw_leaderboard():
+    pygame.draw.rect(screen, (255, 255, 255), (0, grid_height, screen_width, leaderboard_height))  # background
+    pygame.draw.line(screen, (0, 0, 0), (0, grid_height), (screen_width, grid_height), 2)  # top border
+
+    red_score = len(locked_tiles)
+    text = font.render(f"Red: {red_score}", True, (255, 0, 0))
+    screen.blit(text, (10, grid_height + 30))
+
 
 #drawing grid
 def draw_grid(tile_size):
@@ -44,6 +62,7 @@ while running:
 
     #draw grid
     draw_grid(tile_size)
+    draw_leaderboard()
 
     #event handler, add avents like on click, clikc hold, drawing lines
     for event in pygame.event.get():
@@ -63,7 +82,7 @@ while running:
                     scribble_surf,
                     (255,0,0),       # red scribble
                     event.pos,
-                    8                # brush radius
+                    20                # brush radius
                 )
         elif event.type == pygame.MOUSEBUTTONDOWN:
             print("Right mouse button pressed")
@@ -89,6 +108,8 @@ while running:
                 if percent_filled >= 0.5:
                     pygame.draw.rect(scribble_surf, (255, 0, 0), tile_rect)
                     locked_tiles.append((row, col))
+                else:
+                    pygame.draw.rect(scribble_surf, (255, 255, 255), tile_rect)
             drawing = False
             current_tile = None
 
