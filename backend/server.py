@@ -38,7 +38,6 @@ def handle_client(c):
 
 def stop_server():
     global server_running
-
     server_running = False
 
 def run(ip, portno):
