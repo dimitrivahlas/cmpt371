@@ -78,19 +78,24 @@ while running:
             elif event.rel[0] < 0:
                 print("mouse moving left")
             if drawing and current_tile and current_tile not in locked_tiles:
-                pygame.draw.circle(
-                    scribble_surf,
-                    (255,0,0),       # red scribble
-                    event.pos,
-                    8                # brush radius
-                )
+                mx, my = event.pos
+                col = mx // tile_size
+                row = my // tile_size
+                if (row, col) == current_tile:  # restrict to same tile
+                    pygame.draw.circle(
+                        scribble_surf,
+                        (255, 0, 0),  # red scribble
+                        event.pos,
+                        4  # brush radius
+                    )
         elif event.type == pygame.MOUSEBUTTONDOWN:
             print("Right mouse button pressed")
             mx, my = event.pos
             col = mx // tile_size
             row = my // tile_size
-            current_tile = (row, col)
-            if current_tile not in locked_tiles:
+            tile = (row, col)
+            if not drawing and tile not in locked_tiles:
+                current_tile = tile
                 drawing = True
         elif event.type == pygame.MOUSEBUTTONUP:
             print("Mouse button has been released")
