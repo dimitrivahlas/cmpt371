@@ -1,6 +1,8 @@
 import threading
 # import socket
 import requests
+import subprocess
+import os # for getting directory of pygame
 from tkinter import *
 from backend.server import run
 from backend import server
@@ -30,11 +32,22 @@ def show_menu():
         server.stop_server()
         show_window(menu_frame)
 
+    def start_game():
+        print("Started Game")
+        try:
+            game_path = os.path.join("..", "frontend", "gui", "interface.py")
+            subprocess.Popen(["python", game_path])
+        except Exception as e:
+            print("Failed to start game:", e)
+
     def host_game():
         delete_msg()
         # print("Hosting game...")
+        back_button_host.pack(pady=10)
         address_text.config(text="Your IP Address is: " + host_address)
         address_text.pack(pady=10)
+        players_connected_label.pack(pady=10)
+        start_game_button.pack(pady=10)
         show_window(host_frame)
         thread1 = threading.Thread(target=run, args=("0.0.0.0", 50558), daemon= True).start()
 
@@ -61,6 +74,9 @@ def show_menu():
         connect_button.pack_forget()
         back_button_join.pack_forget()
         connected_label.pack_forget()
+        back_button_host.pack_forget()
+        players_connected_label.pack_forget()
+        start_game_button.pack_forget()
 
     window = Tk()
 
@@ -84,10 +100,17 @@ def show_menu():
 
     # Host User UI
     address_text = Label(host_frame, text="", font=("Arial", 16), bg="white", fg="black")
-    address_text.pack(pady=10)
+
 
     back_button_host = Button(host_frame, text="Back to Menu", font=("Arial", 16), bg="white", fg="black", command=back_ToMenu)
-    back_button_host.pack(pady=10)
+
+
+    players_connected_label = Label(host_frame, text="Waiting for players to join", font=("Arial", 16), bg="white", fg="black")
+
+
+    start_game_button = Button(host_frame, text="Start Game", font=("Arial", 16), bg="green", fg="white",
+                               command=start_game)
+
 
 
     # Join User UI
