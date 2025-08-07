@@ -61,10 +61,13 @@ def show_menu():
         show_window(join_frame)
 
     def connect_client():
-        ip = entered_ip.get()
-        connected_label.config("text=Connected. Waiting for host to start.")
-        connected_label.pack(pady=10)
-        run_client2(ip, 50558)
+        try:
+            ip = entered_ip.get()
+            run_client2(ip, 50558)
+            connected_label.config(text="connected. Waiting for host to start.")
+            connected_label.pack(pady=10)
+        except Exception as e:
+            print("Failed to connect client:", e)
 
     def delete_msg():
         address_text.pack_forget()
