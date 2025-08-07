@@ -1,6 +1,8 @@
 #create a TCP/IP socket for a client
-
+import queue
 import socket
+import threading
+
 
 def run_client():
     #define server address and port to connect to
@@ -34,6 +36,10 @@ def run_client():
     s.close()
 
 def run_client2(ip, portno):
+    """
+    Run client whose connection will not be localhost
+    """
+
     #define server address and port to connect to
     host = 'localhost'
     if ip is not None:
@@ -45,6 +51,25 @@ def run_client2(ip, portno):
 
     #connect to sever
     s.connect((host, port))
+
+    # #create queue for handling messages
+    # msg_queue = queue.Queue()
+    #
+    # def recv_loop():
+    #     try:
+    #         while True:
+    #             data = s.recv(1024)
+    #             if not data:
+    #                 break
+    #             msg_queue.put(data.decode('ascii'))
+    #     finally:
+    #         s.close()
+    #         msg_queue.put(None)
+    #
+    # threading.Thread(target=recv_loop, daemon=True).start()
+    #
+    # #
+    # s.setblocking(True)
 
     #message we send to server
     msg = "hello from client"

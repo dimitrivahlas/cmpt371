@@ -63,9 +63,12 @@ def show_menu():
     def connect_client():
         try:
             ip = entered_ip.get()
-            run_client2(ip, 50558)
+            thread2 = threading.Thread(target=run_client2, args=(ip, 50558), daemon=True).start()
+            # run_client2(ip, 50558)
+            connect_button.pack_forget()
+            back_button_join.pack_forget()
             connected_label.config(text="connected. Waiting for host to start.")
-            connected_label.pack(pady=10)
+            connected_label.pack(pady=20)
         except Exception as e:
             print("Failed to connect client:", e)
 
