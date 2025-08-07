@@ -5,6 +5,15 @@ import numpy as np
 #Initialize pygame
 pygame.init()
 
+#Define diff player colours
+player_colours = {
+    1: (255,0,0), #red
+    2: (0,255,0),#Green
+    3: (0,0,255), # Blue
+    4: (255,255,0), # yellow
+}
+
+current_player = 1 #for now hardcode until client is set up
 #set up game swindow
 tile_size = 100
 screen_width = 800
@@ -84,7 +93,7 @@ while running:
                 if (row, col) == current_tile:  # restrict to same tile
                     pygame.draw.circle(
                         scribble_surf,
-                        (255, 0, 0),  # red scribble
+                        player_colours[current_player],  # swap through diff players
                         event.pos,
                         4  # brush radius
                     )
@@ -111,7 +120,7 @@ while running:
                 total_pixels = tile_size * tile_size
                 percent_filled = filled_pixels / total_pixels
                 if percent_filled >= 0.5:
-                    pygame.draw.rect(scribble_surf, (255, 0, 0), tile_rect)
+                    pygame.draw.rect(scribble_surf, player_colours[current_player], tile_rect)
                     locked_tiles.append((row, col))
                 else:
                     pygame.draw.rect(scribble_surf, (255, 255, 255), tile_rect)
