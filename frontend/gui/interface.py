@@ -82,7 +82,7 @@ while running:
                     scribble_surf,
                     (255,0,0),       # red scribble
                     event.pos,
-                    20                # brush radius
+                    8                # brush radius
                 )
         elif event.type == pygame.MOUSEBUTTONDOWN:
             print("Right mouse button pressed")
