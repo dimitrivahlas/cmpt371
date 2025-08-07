@@ -1,14 +1,38 @@
 import socket
 import threading
-from _thread import start_new_thread
+from dataclasses import dataclass
+from typing import Tuple
+
+
+class Game:
+    def __init__(self):
+        self.clients = {}
+        self.gamegrid = {}
+    def add_client(self, conn, addr):
+        self.clients[addr] = ClientInfo(conn, addr)
+
+    def remove_client(self, addr):
+        del self.clients[addr]
+
+    def broadcast_all(self, data, sender_addr):
+        for addr, info in self.clients.items():
+            if addr != sender_addr:
+                info.sock.sendall(data).encode("ascii")
+
+@dataclass
+class ClientInfo:
+    sock: socket.socket
+    addr: tuple[str, int]
+
+game = Game()
 
 server_running = False
 server_socket = None
 
 lock = threading.Lock()
 
-# add each thread/player to this map
-players = {}
+# # add each thread/player to this map
+# players = {}
 
 # placeholder for map that keeps track of game state
 game_grid = {}
@@ -16,13 +40,10 @@ game_grid = {}
 # handle client connection function
 
 
-'''
-
-'''
 
 
-def broadcast():
-    return 0
+def broadcast(msg, sender):
+    game.broadcast_all(msg, sender)
 
 
 def handle_client(c):
@@ -65,8 +86,9 @@ def run(ip, portno):
         while server_running:
             try:
                 c, addr = server_socket.accept()
-                lock.acquire()
+                # lock.acquire()
                 print('connected to:', addr[0], ":", addr[1])
+                game.add_client(c, addr)
                 thread = threading.Thread(target=handle_client, args=(c,), daemon=True).start()
             except socket.timeout:
                 continue

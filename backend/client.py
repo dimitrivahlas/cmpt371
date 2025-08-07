@@ -2,7 +2,7 @@
 import queue
 import socket
 import threading
-
+import subprocess, os, time
 
 def run_client():
     #define server address and port to connect to
@@ -24,6 +24,8 @@ def run_client():
 
         #recieve a response from server up to 1024 bytes
         data = s.recv(1024)
+
+
 
         #decode and print server
         print('Received from server:', data.decode('ascii'))
@@ -81,12 +83,20 @@ def run_client2(ip, portno):
         #recieve a response from server up to 1024 bytes
         data = s.recv(1024)
 
+        if data.decode('ascii') == "server: starting":
+            try:
+                game_path = os.path.join("..", "frontend", "gui", "interface.py")
+                subprocess.Popen(["python", game_path])
+                time.sleep(5)
+                break
+            except Exception as e:
+                print("Failed to start game:", e)
         #decode and print server
         print('Received from server:', data.decode('ascii'))
 
-        ans = input('Do you want to continue (y/n): ')
-        if ans.lower() != 'y':
-            break
+        # ans = input('Do you want to continue (y/n): ')
+        # if ans.lower() != 'y':
+        #     break
 
     #close socket connection
     s.close()

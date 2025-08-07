@@ -7,6 +7,7 @@ from tkinter import *
 from backend.server import run
 from backend import server
 from backend.client import run_client2
+from backend.server import *
 
 def show_menu():
 
@@ -35,6 +36,7 @@ def show_menu():
     def start_game():
         print("Started Game")
         try:
+            game.broadcast_all("server: starting", (host_address, 50558))
             game_path = os.path.join("..", "frontend", "gui", "interface.py")
             subprocess.Popen(["python", game_path])
         except Exception as e:
@@ -49,6 +51,7 @@ def show_menu():
         players_connected_label.pack(pady=10)
         start_game_button.pack(pady=10)
         show_window(host_frame)
+
         thread1 = threading.Thread(target=run, args=("0.0.0.0", 50558), daemon= True).start()
 
     def join_game():
