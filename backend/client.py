@@ -39,7 +39,6 @@ def run_client():
     # close socket connection
     s.close()
 
-
 def run_client2(ip, portno):
     """
     Run client whose connection will not be localhost
@@ -72,7 +71,7 @@ def run_client2(ip, portno):
             try:
                 host = parts[1]
                 port = parts[2]
-                print(f"Server is starting at {host}:{port}")
+                print("Server is starting at " +  host + " " + port)
 
                 game_path = os.path.join("..", "frontend", "gui", "interface.py")
 
