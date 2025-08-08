@@ -33,12 +33,23 @@ def show_menu():
         server.stop_server()
         show_window(menu_frame)
 
+    # def start_game():
+    #     print("Started Game")
+    #     try:
+    #         game.broadcast_all("server: starting", (host_address, 50558))
+    #         game_path = os.path.join("..", "frontend", "gui", "interface.py")
+    #         subprocess.Popen(["python", game_path])
+    #     except Exception as e:
+    #         print("Failed to start game:", e)
+
     def start_game():
         print("Started Game")
         try:
-            game.broadcast_all("server: starting", (host_address, 50558))
+            message = "server_start|" + host_address + "|50558"
+            broadcast(message, sender=None)
+
             game_path = os.path.join("..", "frontend", "gui", "interface.py")
-            subprocess.Popen(["python", game_path])
+            subprocess.Popen(["python", game_path, "127.0.0.1", str(50558)])
         except Exception as e:
             print("Failed to start game:", e)
 
@@ -53,6 +64,17 @@ def show_menu():
         show_window(host_frame)
 
         thread1 = threading.Thread(target=run, args=("0.0.0.0", 50558), daemon= True).start()
+
+        # get live update of number of players connected
+        def total_players():
+            try:
+                num = len(server.game.client_list)
+                players_connected_label.config(text="Players connected: " + num)
+            except Exception:
+                pass
+            if host_frame.winfo_ismapped():
+                host_frame.after(1000, total_players)
+        total_players()
 
     def join_game():
         delete_msg()
