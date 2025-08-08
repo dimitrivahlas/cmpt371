@@ -17,7 +17,7 @@ class Game:
     def broadcast_all(self, data, sender_addr):
         for addr, info in self.clients.items():
             if addr != sender_addr:
-                info.sock.sendall(data).encode("ascii")
+                info.sock.sendall(data.encode("ascii"))
 
 @dataclass
 class ClientInfo:
