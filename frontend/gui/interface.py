@@ -95,7 +95,7 @@ while running:
                         scribble_surf,
                         player_colours[current_player],  # swap through diff players
                         event.pos,
-                        4  # brush radius
+                        2  # brush radius
                     )
         elif event.type == pygame.MOUSEBUTTONDOWN:
             print("Right mouse button pressed")
