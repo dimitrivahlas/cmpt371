@@ -145,7 +145,8 @@ while running:
                     locked_tiles[(row,col)] = current_player
                     #send_tile_update(row,col,current_player) not defined yet
                 else:
-                    pygame.draw.rect(scribble_surf, (255, 255, 255), tile_rect)
+                    # pygame.draw.rect(scribble_surf, (255, 255, 255), tile_rect)
+                    pygame.draw.rect(scribble_surf, (0, 0, 0, 0), tile_rect)
             drawing = False
             current_tile = None
 
