@@ -177,14 +177,14 @@ def apply_remote(msg: str):
 
         elif typ == "LOCK":
             # msg structure: LOCK;row;col;player_id
-            row = int(parts[1]);
-            col = int(parts[2]);
+            row = int(parts[1])
+            col = int(parts[2])
             pid = int(parts[3])
             busy_tiles[(row, col)] = pid
 
         elif typ == "UNLOCK":
             # msg structure: UNLOCK;row;col
-            row = int(parts[1]);
+            row = int(parts[1])
             col = int(parts[2])
             busy_tiles.pop((row, col), None)
 
