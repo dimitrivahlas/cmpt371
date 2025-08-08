@@ -69,7 +69,7 @@ def show_menu():
         def total_players():
             try:
                 num = len(server.game.client_list)
-                players_connected_label.config(text="Players connected: " + num)
+                players_connected_label.config(text=f"Players connected: {num}")
             except Exception:
                 pass
             if host_frame.winfo_ismapped():
