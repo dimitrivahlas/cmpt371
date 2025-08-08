@@ -1,6 +1,18 @@
 import pygame
 from pygame.locals import *
 import numpy as np
+#from backend .client import send_tile_update we need this defined
+
+
+#get the player id from clinet which needs to be implemented there
+def set_player_id(player_id):
+    global current_player
+    current_player = player_id
+
+#handling game over
+def game_over(winner_id):
+    print(f"player {winner_id} wins")
+    pygame.quit
 
 #Initialize pygame
 pygame.init()
@@ -33,7 +45,7 @@ screen.fill((255,255,255))
 # scribble surface
 scribble_surf = pygame.Surface((screen_width, screen_height), SRCALPHA)
 drawing = False
-locked_tiles = []
+locked_tiles = {} #row,col
 current_tile = None
 
 
@@ -46,9 +58,18 @@ def draw_leaderboard():
     pygame.draw.rect(screen, (255, 255, 255), (0, grid_height, screen_width, leaderboard_height))  # background
     pygame.draw.line(screen, (0, 0, 0), (0, grid_height), (screen_width, grid_height), 2)  # top border
 
-    red_score = len(locked_tiles)
-    text = font.render(f"Red: {red_score}", True, (255, 0, 0))
-    screen.blit(text, (10, grid_height + 30))
+    #Count score for each player
+    scores = {pid: 0 for pid in player_colours}
+    for owner in locked_tiles.values():
+        scores[owner] += 1
+
+    #Display scores
+    x_offset = 10
+    for pid, score in scores.items():
+        color = player_colours[pid]
+        text = font.render(f"P{pid}: {score}", True, color)
+        screen.blit(text, (x_offset, grid_height + 30))
+        x_offset += 200
 
 
 #drawing grid
@@ -121,7 +142,8 @@ while running:
                 percent_filled = filled_pixels / total_pixels
                 if percent_filled >= 0.5:
                     pygame.draw.rect(scribble_surf, player_colours[current_player], tile_rect)
-                    locked_tiles.append((row, col))
+                    locked_tiles[(row,col)] = current_player
+                    #send_tile_update(row,col,current_player) not defined yet
                 else:
                     pygame.draw.rect(scribble_surf, (255, 255, 255), tile_rect)
             drawing = False
@@ -131,3 +153,11 @@ while running:
 
 #quit pygame
 pygame.quit()
+
+#will need to be ceint.py for updates
+def update_tile_from_server(row, col, player_id):
+    locked_tiles[(row, col)] = player_id
+    x = col * tile_size
+    y = row * tile_size
+    tile_rect = pygame.Rect(x, y, tile_size, tile_size)
+    pygame.draw.rect(scribble_surf, player_colours[player_id], tile_rect)
