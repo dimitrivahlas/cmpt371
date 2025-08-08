@@ -15,7 +15,7 @@ player_colours = {
 }
 
 current_player = 1  # overwritten by ASSIGN
-current_color = (255,0,0)  # overwritten by ASSIGN
+current_colour = (255,0,0)  # overwritten by ASSIGN
 
 #set up game window
 tile_size = 100
@@ -118,8 +118,8 @@ def draw_leaderboard():
     # Display Scores
     x_offset = 10
     for pid in sorted(scores.keys()):
-        color = player_colours[pid]
-        text = font.render(f"P{pid}: {scores[pid]}", True, color)
+        colour = player_colours[pid]
+        text = font.render(f"P{pid}: {scores[pid]}", True, colour)
         screen.blit(text, (x_offset, grid_height + 30))
         x_offset += 180
 
@@ -151,7 +151,7 @@ def apply_remote(msg: str):
     """
     Update local gamestate with server gamestate
     """
-    global current_player, current_color
+    global current_player, current_colour
     try:
         parts = msg.split(";")
         typ = parts[0]
@@ -160,8 +160,8 @@ def apply_remote(msg: str):
             pid = int(parts[1])
             r,g,b = int(parts[2]), int(parts[3]), int(parts[4])
             current_player = pid
-            current_color = (r,g,b)
-            print(f"Assigned player {pid} color {current_color}")
+            current_colour = (r,g,b)
+            print(f"Assigned player {pid} colour {current_colour}")
 
         elif typ == "PEN":
             # msg structure: PEN;row;col;x;y;R;G;B
@@ -194,12 +194,15 @@ def apply_remote(msg: str):
             r = int(parts[3]); g = int(parts[4]); b = int(parts[5])
             tile_rect = pygame.Rect(col*tile_size, row*tile_size, tile_size, tile_size)
             pygame.draw.rect(scribble_surf, (r,g,b), tile_rect)
-            # Find owner id by color (optional); or leave unchanged if unknown
+
+            # Attempt to identify the claiming player by the given colour
             owner_id = None
             for pid, clr in player_colours.items():
                 if clr == (r,g,b):
                     owner_id = pid
                     break
+
+            # If player is identified, register ownership of this tile (using their id)
             if owner_id is not None:
                 locked_tiles[(row,col)] = owner_id
             busy_tiles.pop((row, col), None)
@@ -249,10 +252,10 @@ while running:
                 if (row, col) == current_tile:
                     tile_rect = pygame.Rect(col*tile_size, row*tile_size, tile_size, tile_size)
                     scribble_surf.set_clip(tile_rect)
-                    pygame.draw.circle(scribble_surf, current_color, (mx,my), 3)
+                    pygame.draw.circle(scribble_surf, current_colour, (mx,my), 3)
                     scribble_surf.set_clip(None)
                     # broadcast live pen
-                    net_send(f"PEN;{row};{col};{mx};{my};{current_color[0]};{current_color[1]};{current_color[2]}")
+                    net_send(f"PEN;{row};{col};{mx};{my};{current_colour[0]};{current_colour[1]};{current_colour[2]}")
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
             mx, my = event.pos
@@ -280,18 +283,18 @@ while running:
                 total_pixels = tile_size * tile_size
                 percent_filled = filled_pixels / total_pixels
                 if percent_filled >= 0.5:
-                    pygame.draw.rect(scribble_surf, current_color, tile_rect)
+                    pygame.draw.rect(scribble_surf, current_colour, tile_rect)
                     # logic for updating host score based on colour
                     owner_id = current_player
                     if owner_id not in player_colours:
-                        # try to map by color to an existing palette slot
-                        mapped = next((pid for pid, clr in player_colours.items() if clr == current_color), None)
+                        # try to map by colour to an existing palette slot
+                        mapped = next((pid for pid, clr in player_colours.items() if clr == current_colour), None)
                         if mapped is not None:
                             owner_id = mapped
 
                     if owner_id in player_colours:
                         locked_tiles[(row, col)] = owner_id
-                        net_send(f"CLAIM;{row};{col};{current_color[0]};{current_color[1]};{current_color[2]}")
+                        net_send(f"CLAIM;{row};{col};{current_colour[0]};{current_colour[1]};{current_colour[2]}")
                 else:
                     pygame.draw.rect(scribble_surf, (0,0,0,0), tile_rect)
                     net_send(f"CLEAR;{row};{col}")
