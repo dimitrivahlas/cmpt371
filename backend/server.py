@@ -82,11 +82,6 @@ def broadcast(msg, sender=None):
 def stop_server():
     global server_running, server_socket
     server_running = False
-    try:
-        if server_socket:
-            server_socket.close()
-    except:
-        pass
 
 def handle_client(c, addr):
     """
