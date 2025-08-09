@@ -1,4 +1,4 @@
-# cmpt371
+# CMPT 371: Deny and Conquer Game
 
 **How to Run**
 
